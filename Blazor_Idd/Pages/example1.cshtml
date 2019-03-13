@@ -1,0 +1,59 @@
+﻿@page "/example1"
+@inject IJSRuntime JSRuntime
+@using System
+@using Newtonsoft.Json
+
+
+<button type="button" class="btn btn-primary" onclick="@CallJS">
+    Trigger Idd
+</button>
+
+<div id="chart1" data-idd-plot="chart" style="width: auto; height: 600px;">
+    <div data-idd-name="line" data-idd-plot="polyline" data-idd-style="border:grey; shape: cross;" />
+</div>
+
+@functions {
+    [Parameter]
+    private string FunctionString { get; set; } = "InteractiveDataDisplay.asPlot('chart1').get('line').draw('@')";
+
+    public class data1
+    {
+        public double[] x { get; set; }
+        public double[] y { get; set; }
+        public string stroke { get; set; }
+
+        public data1()
+        {
+        }
+    }
+
+    private data1 buildData1()
+    {
+        const int M = 200;
+            var x = new double[M];
+            var y = new double[M];
+            for (var i = 0; i < M; i++)
+            {
+                x[i] = i;
+                y[i] = Math.Sin(i * 3.1415 / 50);
+            }
+
+            data1 data = new data1 { x = x, y = y, stroke = "darkgrey" };
+        return data;
+    }
+
+    private async void CallJS()
+    {
+        try
+        {
+            if (await JSRuntime.InvokeAsync<bool>("JsFunctions.interop", FunctionString, JsonConvert.SerializeObject(buildData1())))
+            {
+                Console.WriteLine("JS successfully called");
+            }
+        }
+        catch (Exception)
+        {
+
+        }
+    }
+}

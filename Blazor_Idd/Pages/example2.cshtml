@@ -1,0 +1,74 @@
+﻿@page "/example2"
+@inject IJSRuntime JSRuntime
+@using System
+@using Newtonsoft.Json
+
+
+<button type="button" class="btn btn-primary" onclick="@CallJS">
+    Trigger Idd
+</button>
+
+<div id="chart2" data-idd-plot="chart" style="width: auto; height: 600px;">
+    <div data-idd-name="bars" data-idd-plot="markers"/>
+</div>
+
+@functions {
+    [Parameter]
+    private string FunctionString { get; set; } = "InteractiveDataDisplay.asPlot('chart2').get('bars').draw('@');";
+
+    public class data2
+    {
+        public double[] x { get; set; }
+        public double[] y { get; set; }
+        public string[] color { get; set; }
+        public string border { get; set; }
+        public double barWidth { get; set; }
+        public string shadow { get; set; }
+        public string shape { get; set; }
+
+        public data2()
+        {
+        }
+    }
+
+    private data2 buildData2()
+    {
+        const int N = 20;
+        var x = new double[N];
+        var y = new double[N];
+        var color = new string[N];
+
+        var pos = 0;
+        for (var i = 0; i < N; i++) {
+            x[i] = pos;
+            var rand = new Random();
+            y[i] = rand.Next(1, 15) * N - N / 2;
+            if (i % 2 == 0) {
+                pos += 1;
+                color[i] = "orange";
+            }
+            else {
+                pos += 5;
+                color[i] = "blue";
+            }
+        }
+
+        data2 data = new data2 { x = x, y = y, color = color, border = "grey", barWidth = 0.9, shadow = "grey", shape = "bars" };
+        return data;
+    }
+
+    private async void CallJS()
+    {
+        try
+        {
+            if (await JSRuntime.InvokeAsync<bool>("JsFunctions.interop", FunctionString, JsonConvert.SerializeObject(buildData2())))
+            {
+                Console.WriteLine("JS successfully called");
+            }
+        }
+        catch (Exception)
+        {
+
+        }
+    }
+}

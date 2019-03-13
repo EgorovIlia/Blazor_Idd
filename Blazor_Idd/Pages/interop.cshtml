@@ -1,0 +1,34 @@
+﻿@page "/interop"
+@inject IJSRuntime JSRuntime
+@using System
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+
+
+<button type="button" class="btn btn-primary" onclick="@CallJS">
+    Trigger Idd
+</button>
+
+<div id="chart" data-idd-plot="chart" style="width: auto; height: 600px; margin-top: 20px;">
+</div>
+
+@functions {
+    [Parameter]
+    private string FunctionString { get; set; } = null;
+
+    private async void CallJS()
+    {
+
+        try
+        {
+            if (await JSRuntime.InvokeAsync<bool>("JsFunctions.interop", FunctionString))
+            {
+                Console.WriteLine("JS successfully called");
+            }
+        }
+        catch (Exception)
+        {
+
+        }
+    }
+}
