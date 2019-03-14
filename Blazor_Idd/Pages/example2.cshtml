@@ -4,17 +4,23 @@
 @using Newtonsoft.Json
 
 
-<button type="button" class="btn btn-primary" onclick="@CallJS">
-    Trigger Idd
-</button>
-
 <div id="chart2" data-idd-plot="chart" style="width: auto; height: 600px;">
     <div data-idd-name="bars" data-idd-plot="markers"/>
 </div>
 
+<button type="button" class="btn btn-primary" onclick="@CallJS">
+    Update Data
+</button>
+
 @functions {
     [Parameter]
     private string FunctionString { get; set; } = "InteractiveDataDisplay.asPlot('chart2').get('bars').draw('@');";
+
+    protected override async Task OnInitAsync()
+    {
+        await Task.Delay(1); //need some task to be executed before CallJS(), otherwise CallJS stuck. Have no idea why that happens
+        await CallJS();
+    }
 
     public class data2
     {
@@ -57,7 +63,7 @@
         return data;
     }
 
-    private async void CallJS()
+    private async Task CallJS()
     {
         try
         {

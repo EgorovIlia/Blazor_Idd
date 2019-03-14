@@ -5,10 +5,6 @@
 @using Newtonsoft.Json.Linq
 
 
-<button type="button" class="btn btn-primary" onclick="@CallJS">
-    Trigger Idd
-</button>
-
 <div id="chart" data-idd-plot="chart" style="width: auto; height: 600px; margin-top: 20px;">
 </div>
 
@@ -16,7 +12,13 @@
     [Parameter]
     private string FunctionString { get; set; } = null;
 
-    private async void CallJS()
+    protected override async Task OnInitAsync()
+    {
+        await Task.Delay(1); //need some task to be executed before CallJS(), otherwise CallJS stuck. Have no idea why that happens
+        await CallJS();
+    }
+
+    private async Task CallJS()
     {
 
         try

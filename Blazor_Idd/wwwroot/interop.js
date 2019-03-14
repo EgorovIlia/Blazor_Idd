@@ -58,8 +58,12 @@
             }
             return context;
         }
-
+        console.log("interop.js")
         executeFunctionByString(functionStr, window, Array.prototype.slice.call(arguments, 1));
+        return true;
+    },
+    log: function (message) {
+        console.log(message);
         return true;
     }
 };
